@@ -1,5 +1,5 @@
 const aws = require("aws-sdk");
-const { getPaginatedFeedback, addFeedback, deleteFeedback } = require("../queries/feedbackQueries");
+const { getPaginatedFeedback, addFeedback, deleteFeedback, createFeedback } = require("../queries/feedbackQueries");
 
 exports.getFeedbackWithPagination = async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
@@ -106,3 +106,45 @@ exports.deleteFeedback = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+exports.createFeedback = async (req, res) => {
+  try {
+    const { user_ids, tour_id, text_feedback, sender_id } = req.body; // Extract `user_ids`, `tour_id`, `text_feedback`, and `sender_id`
+
+    // Validate input
+    if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User IDs (user_ids) must be a non-empty array.",
+      });
+    }
+    if (!tour_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Tour ID is required.",
+      });
+    }
+    if (!sender_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Sender ID is required.",
+      });
+    }
+
+    // Call query to insert feedback
+    const feedback = await createFeedback(user_ids, tour_id, text_feedback || null, sender_id);
+
+    res.status(201).json({
+      success: true,
+      data: feedback,
+      message: "Feedback created successfully.",
+    });
+  } catch (error) {
+    console.error("Error creating feedback:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create feedback.",
+    });
+  }
+};
+
+

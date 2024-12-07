@@ -1,0 +1,78 @@
+/* Main container for sidebar and page content */
+.fair-assignment-page {
+    display: flex; /* Use flex layout for sidebar and content */
+    flex-direction: row; /* Place sidebar and content side by side */
+    height: 100vh; /* Full height */
+    overflow: hidden; /* Prevent overflow */
+}
+
+
+/* Page content container */
+.fair-assignment-content {
+    flex-grow: 1; /* Take up remaining space */
+    padding: 20px; /* Add padding */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    margin-left: 200px; /* Create space from the sidebar */
+}
+
+/* Page title styling */
+.fair-assignment-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* DataTable styling */
+.p-datatable {
+    width: 90%; /* Proportional width for table */
+    margin: auto; /* Center table within the content area */
+    border-collapse: collapse; /* Clean table layout */
+}
+
+/* DataTable header cells */
+.p-datatable thead th {
+    text-align: left;
+    background-color: #f9f9f9; /* Light background for headers */
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd; /* Divider between header and rows */
+}
+
+/* DataTable rows */
+.p-datatable tbody tr {
+    border-bottom: 1px solid #eee; /* Divider for rows */
+}
+
+/* DataTable cells */
+.p-datatable tbody td {
+    padding: 10px;
+}
+
+/* Action buttons */
+.p-button {
+    background-color: #007bff; /* Blue for "Request to Join" */
+    border: none;
+    color: #fff;
+}
+
+.p-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.p-button:disabled {
+    background-color: #ddd; /* Gray for disabled buttons */
+    color: #666;
+}
+
+/* Adjusting for responsive layouts */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Smaller width for sidebar */
+    }
+    .fair-assignment-content {
+        margin-left: 10px; /* Reduced spacing */
+        padding: 10px;
+    }
+    .p-datatable {
+        width: 100%; /* Allow full-width table on small screens */
+    }
+}

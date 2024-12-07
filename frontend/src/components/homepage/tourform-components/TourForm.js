@@ -5,6 +5,11 @@ import Title from './Title';
 import LeftForm from './LeftForm';
 import RightForm from './RightForm';
 import Buttons from './Buttons';
+import IndividualTourForm from './IndividualTourForm';
+import FairForm from './FairForm';
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');
 
 const TourForm = () => {
   // ============================
@@ -31,6 +36,8 @@ const TourForm = () => {
   // ============================
   const toastRef = useRef(null);
 
+  const [isIndividualTourModalOpen, setIndividualTourModalOpen] = useState(false);
+  const [isFairModalOpen, setFairModalOpen] = useState(false);
   // ==========================
   // Handler to Reset All Fields
   // ==========================
@@ -145,8 +152,54 @@ const TourForm = () => {
             />
           </div>
           <Buttons handleClear={handleClear} />
+          <div className="form-links">
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => setIndividualTourModalOpen(true)}
+            >
+              Apply to an Individual Tour
+            </button>
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => setFairModalOpen(true)}
+            >
+              Invite to a Fair
+            </button>
+          </div>
         </div>
       </form>
+      <Modal
+        isOpen={isIndividualTourModalOpen}
+        onRequestClose={() => setIndividualTourModalOpen(false)}
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => setIndividualTourModalOpen(false)}
+        >
+          &times;
+        </button>
+        <IndividualTourForm onClose={() => setIndividualTourModalOpen(false)} />
+      </Modal>
+
+      {/* Fair Modal */}
+      <Modal
+        isOpen={isFairModalOpen}
+        onRequestClose={() => setFairModalOpen(false)}
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => setFairModalOpen(false)}
+        >
+          &times;
+        </button>
+        <FairForm onClose={() => setFairModalOpen(false)} />
+      </Modal>
     </>
   );
 };

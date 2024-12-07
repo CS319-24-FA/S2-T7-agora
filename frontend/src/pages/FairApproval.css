@@ -1,0 +1,86 @@
+/* Main container for sidebar and page content */
+.fair-approval-page {
+    display: flex; /* Use flex layout for sidebar and content */
+    flex-direction: row; /* Place sidebar and content side by side */
+    height: 100vh; /* Full height */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Page content container */
+.fair-approval-content {
+    flex-grow: 1; /* Take up remaining space */
+    padding: 20px; /* Add padding */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    margin-right: -30px;   
+    margin-left: 200px; /* Create space from the sidebar */
+}
+
+/* Page title styling */
+.fair-approval-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* DataTable styling */
+.p-datatable {
+    width: 95%; /* Proportional width for table */
+    margin: auto; /* Center table within the content area */
+    border-collapse: collapse; /* Clean table layout */
+}
+
+/* DataTable header cells */
+.p-datatable thead th {
+    text-align: left;
+    background-color: #f9f9f9; /* Light background for headers */
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd; /* Divider between header and rows */
+}
+
+/* DataTable rows */
+.p-datatable tbody tr {
+    border-bottom: 1px solid #eee; /* Divider for rows */
+}
+
+/* DataTable cells */
+.p-datatable tbody td {
+    padding: 10px;
+}
+
+/* Action buttons */
+.p-button-success {
+    background-color: #4caf50; /* Green for approve */
+    border: none;
+}
+
+.p-button-success:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.p-button-danger {
+    background-color: #f44336; /* Red for cancel */
+    border: none;
+}
+
+.p-button-danger:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* Dropdown in the table */
+.p-dropdown {
+    width: 100%; /* Full width for dropdowns */
+}
+
+/* Adjusting for responsive layouts */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Smaller width for sidebar */
+    }
+    .fair-approval-content {
+        margin-left: 10px; /* Reduced spacing */
+        padding: 10px;
+    }
+    .p-datatable {
+        width: 100%; /* Allow full-width table on small screens */
+    }
+}

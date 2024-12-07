@@ -1,0 +1,20 @@
+/* Blue button for Notes */
+.p-button-notes {
+    background-color: #007bff !important; /* Blue background */
+    color: white !important;              /* White text */
+    border: none !important;              /* Remove border */
+}
+
+/* Green button for Approve */
+.p-button-approve {
+    background-color: #28a745 !important; /* Green background */
+    color: white !important;              /* White text */
+    border: none !important;              /* Remove border */
+}
+
+/* Red button for Reject */
+.p-button-reject {
+    background-color: #dc3545 !important; /* Red background */
+    color: white !important;              /* White text */
+    border: none !important;              /* Remove border */
+}

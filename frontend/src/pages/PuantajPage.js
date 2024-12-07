@@ -13,12 +13,13 @@ function PuantajPage() {
     }, []);
 
     return (
-        <div className="page-container">
-            {/* Sidebar */}
+        <div className="puantaj-page">
             <Sidebar />
-            {/* Main Content */}
-            <div className="page-content">
+            <div className="puantaj-content">
                 {userType === 4 ? <AdminWorkTable /> : <UserWorkTable />}
+                <div className="submit-button-container">
+                  
+                </div>
             </div>
         </div>
     );

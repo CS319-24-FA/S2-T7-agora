@@ -23,7 +23,7 @@ class UserRepository {
   }
 
   async getAllUsers() {
-    const result = await query("SELECT id, email FROM users");
+    const result = await query("SELECT id, email, first_name, last_name FROM users");
     return result.rows.map((row) => new UserModel(row));
   }
 

@@ -75,12 +75,14 @@ exports.verifyOtp = async (req, res) => {
 
     const isValid = await otpService.verifyOTP(decoded.userId, otp);
     if (!isValid) {
-      return res
-        .status(401)
-        .json({ message: "Invalid or expired verification code" });
+      return res.status(401).json({ message: "Invalid or expired verification code" });
     }
 
-    const accessToken = generateToken(decoded.userId, false);
+    if (typeof decoded.user_type !== 'number') {
+      return res.status(401).json({ message: "Malformed token" });
+    }
+
+    const accessToken = generateToken(decoded.userId, decoded.user_type, false);
 
     res.json({
       message: "Verification successful",

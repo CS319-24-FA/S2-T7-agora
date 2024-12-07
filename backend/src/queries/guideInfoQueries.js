@@ -7,6 +7,8 @@ exports.getGuideInfo = async (filters) => {
     name,
     role,
     department,
+    iban,
+    crew_no,
     sort_by = 'first_name',
     order = 'asc',
     page = 1,
@@ -32,6 +34,8 @@ exports.getGuideInfo = async (filters) => {
       u.role, 
       u.department, 
       u.phone_number, 
+      u.iban,
+      u.crew_no,
       s.schedule_data
     FROM 
       users u

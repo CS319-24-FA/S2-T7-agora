@@ -12,6 +12,13 @@
   }
   
   .filter-input {
-    width: 200px;
+    width: 40%;
   }
+  
+  .filter-row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
   

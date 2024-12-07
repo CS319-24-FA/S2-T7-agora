@@ -1,111 +1,97 @@
-/* Overall container styling */
-.data-table-container {
-    display: flex; 
-    flex-direction: column; /* Arrange components vertically */
-    align-items: center; /* Center-align components horizontally */
-    height: 100vh; 
-    background-color: #f9f9f9; 
-    margin-left: 250px;
-    padding: 20px; /* Add some padding around the container */
+/* Main container for the Puantaj Page */
+.puantaj-page {
+    display: flex; /* Flex layout to align sidebar and content side by side */
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent content overflow */
+    background-color: #ffffff; /* Light background */
 }
 
-/* Main content area where the table and filters are placed */
-.data-table-content {
-    width: 80%; /* Ensure consistent width for the table content */
-    background-color: #ffffff; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    padding: 20px; 
-    margin-bottom: 20px; /* Add space below the table for the Add Work component */
-    overflow-y: auto; 
+/* Main content area */
+.puantaj-content {
+    flex-grow: 1; /* Take the remaining space */
+    padding: 20px; /* Add padding */
+    background-color: #ffffff; /* Match page background */
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+    margin-left: 200px;
 }
 
-/* Header styling */
-.data-table-content h1 {
-    text-align: center; 
-    margin-bottom: 20px; 
-    font-size: 24px; 
-    font-weight: bold; 
-    color: #333333; 
+/* Page title styling */
+.puantaj-content h1 {
+    text-align: center; /* Center-align the title */
+    margin-bottom: 20px; /* Add spacing below the title */
+    font-size: 1.5rem; /* Slightly larger font size */
+    font-weight: bold;
+    color: #333333;
 }
 
-/* PrimeReact DataTable Styling */
+/* Data table styling */
 .p-datatable {
-    min-width: 600px; 
-    width: 100%; /* Make the table occupy the full width of its container */
-    margin: 0 auto; /* Center the table horizontally */
+    width: 100%; /* Full width of the container */
+    background-color: #ffffff; /* White background for table */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for elevation */
+    padding: 10px; /* Padding inside the table container */
+    margin: auto; /* Center the table horizontally */
 }
 
+/* DataTable header cells */
 .p-datatable-thead > tr > th {
-    padding: 10px; 
-    font-size: 14px; 
-    text-align: left; 
-    background-color: #f4f4f4; 
+    padding: 10px; /* Add padding for readability */
+    font-size: 14px; /* Consistent font size */
+    text-align: left; /* Align text to the left */
+    background-color: #f4f4f4; /* Light gray background for headers */
 }
 
+/* DataTable body cells */
 .p-datatable-tbody > tr > td {
-    padding: 10px; 
-    font-size: 14px; 
-    color: #333333; 
+    padding: 10px; /* Add padding */
+    font-size: 14px; /* Consistent font size */
+    color: #333333; /* Dark text color */
 }
 
-/* Add Work button container */
-.add-work-container {
-    display: flex; 
-    justify-content: flex-end; /* Align the button to the right */
-    width: 80%; /* Match the width of the table */
-    margin-top: 20px; 
-}
-
-/* Add Work button styling */
-.add-work-button {
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    padding: 0.5rem 1rem; 
-    background-color: #4CAF50; 
-    color: white; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    font-size: 1rem; 
-    transition: background-color 0.3s ease; 
-    height: 2.5rem; /* Match the height of action buttons */
-    min-width: 6rem; /* Ensure a consistent button size */
-}
-
-.add-work-button:hover {
-    background-color: #45a049; 
-}
-
-/* Align Add Work button with table */
+/* Submit button container */
 .submit-button-container {
-    display: flex; 
-    justify-content: flex-end; 
-    width: 100%; 
-    margin-top: 10px; 
-}
-
-/* Toggle and Submit Button container styling */
-.toggle-container {
-    display: flex; 
-    justify-content: flex-end; 
-    align-items: center; 
-    margin-bottom: 20px; 
-    gap: 10px; 
+    display: flex; /* Flex layout */
+    justify-content: flex-end; /* Align button to the right */
+    margin-top: 20px; /* Add spacing above the button */
 }
 
 /* Submit button styling */
-.submit-button-container button {
-    padding: 0.5rem 1rem; 
-    background-color: #5a6268; 
-    color: white; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease;
+.add-work-button {
+    padding: 0.5rem 1rem; /* Add padding */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 1rem; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
 }
 
-.submit-button-container button:hover {
-    background-color: #515c67; 
+.add-work-button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+/* Align bottom section to the right */
+.add-work-container {
+    display: flex; /* Flex layout for proper alignment */
+    margin-left: 450px;  /* Push the content to the right */
+    margin-top: 20px; /* Add spacing from the top */
+    padding-right: 20px; /* Add some padding on the right */
+}
+
+/* Optional: Adjust button size and spacing for better visuals */
+.add-work-container button {
+    padding: 0.5rem 1.5rem; /* Adjust padding for the button */
+    font-size: 1rem; /* Adjust font size for better readability */
+    border-radius: 5px; /* Make the button look consistent */
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .puantaj-content {
+        padding: 10px; /* Reduce padding for smaller screens */
+    }
+    .p-datatable {
+        width: 100%; /* Full width for smaller screens */
+    }
 }

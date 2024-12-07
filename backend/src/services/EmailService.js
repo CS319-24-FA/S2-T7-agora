@@ -25,6 +25,13 @@ class EmailService {
     });
   }
 
+  async sendIndividualTourConfirmationEmail(email, { name, tour_date, time }) {
+    return await sendEmail({
+      to: email,
+      subject: "Your Tour Application Has Been Received",
+      html: this._getIndividualTourConfirmationTemplate(name, tour_date, time),
+    });
+  }
   // Private template methods
   _getRegistrationTemplate(email, password) {
     return `
@@ -54,6 +61,15 @@ class EmailService {
       <a href="${resetLink}">Reset Password</a>
       <p>This link will expire in 1 hour.</p>
       <p>\n BTO Core Team</p>
+    `;
+  }
+  _getIndividualTourConfirmationTemplate(name, tour_date, time) {
+    return `
+      <p>Dear ${name},</p>
+      <p>Thank you for submitting a tour application to <strong>Bilkent University</strong> through our platform.</p>
+      <p>We have received your request for a tour on <strong>${new Date(tour_date).toLocaleDateString('tr-TR')}</strong> at <strong>${time}</strong>.</p>
+      <p>We sincerely appreciate your interest and will carefully review your application. Rest assured, we will promptly initiate the necessary processes to accommodate your request and provide you with further details as soon as possible.</p>
+      <p>Best regards,<br/><strong>Bilkent Information Office Team</strong></p>
     `;
   }
 }

@@ -44,7 +44,11 @@ exports.getGuideInfo = async (req, res) => {
       }
       // Remove schedule_data from the response
       delete row.schedule_data;
-      return row;
+      return {
+        ...row,
+        iban: row.iban || 'Not Provided',
+        crew_no: row.crew_no || 'Not Provided',
+      };
     });
 
     // Send the result as JSON

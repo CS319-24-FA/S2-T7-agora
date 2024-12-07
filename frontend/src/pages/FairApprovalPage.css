@@ -1,0 +1,32 @@
+/* Parent class for Fair Approval Page styling */
+.fair-approval-page {
+    /* Button styles */
+    .p-button-danger.p-button-sm {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        padding: 0;
+        border-radius: 50%;
+        box-shadow: none;
+    }
+
+    /* Unassign button styles */
+    .unassign-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 10;
+        visibility: hidden;
+    }
+
+    div:hover .unassign-button {
+        visibility: visible; /* Show button only when hovering over the div */
+    }
+
+    /* Cancelled row styling */
+    .cancelled-row {
+        background-color: #f8d7da; /* Light red background */
+        color: #721c24; /* Dark red text */
+        font-weight: bold;
+    }
+}

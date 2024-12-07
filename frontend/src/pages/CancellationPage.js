@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { cancelTour } from "../services/ApproveTourService"; // Import the service function
+import Sidebar from '../components/common/Sidebar';
 
 const CancelConfirmation = () => {
     const [searchParams] = useSearchParams();
@@ -31,6 +32,7 @@ const CancelConfirmation = () => {
 
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
+            <Sidebar />
             <h1>Confirm Cancellation</h1>
             <p>Are you sure you want to cancel your tour?</p>
 

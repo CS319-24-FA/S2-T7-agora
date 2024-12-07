@@ -17,7 +17,8 @@ const {
   approveTour,
   rejectTour,
   updateTime,
-  updateClassRoom,
+  updateClassroom,
+  getDoneTours
 } = require("../queries/tourQueries");
 
 const { getSchoolId } = require("../queries/schoolQueries"); // Import from school queries
@@ -400,16 +401,16 @@ exports.cancelTour = async (req, res) => {
 };
 
 
-exports.updateClassRoom = async (req, res) => {
+exports.updateClassroom = async (req, res) => {
   const { id } = req.params;
-  const { classRoom } = req.body;
+  const { classroom } = req.body;
 
-  if (!classRoom) {
+  if (!classroom) {
     return res.status(400).json({ message: "Classroom is required" });
   }
 
   try {
-    await updateClassRoom(id, classRoom);
+    await updateClassroom(id, classroom);
     res.status(200).json({ message: "Classroom updated successfully" });
   } catch (error) {
     console.error("Error updating classroom:", error.message || error);
@@ -445,8 +446,8 @@ exports.getMyTours = async (req, res) => {
   try {
     console.log("Logged-in user ID:", userId); // Debug the user ID
 
-      const result = await query(
-          `
+    const result = await query(
+      `
           SELECT t.id, t.date, t.day, t.time, t.classroom, t.tour_status,
                  s.school_name, s.city, t.tour_size, t.teacher_name,
                  STRING_AGG(u.first_name || ' ' || u.last_name, ', ') AS guide_names
@@ -458,12 +459,12 @@ exports.getMyTours = async (req, res) => {
           GROUP BY t.id, s.school_name, s.city, t.tour_size, t.teacher_name
           ORDER BY t.date, t.time
           `,
-          [userId]
-      );
-      res.status(200).json({ success: true, tours: result.rows });
+      [userId]
+    );
+    res.status(200).json({ success: true, tours: result.rows });
   } catch (error) {
-      console.error("Error fetching user tours:", error.message || error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error fetching user tours:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -472,15 +473,80 @@ exports.withdrawFromTour = async (req, res) => {
   const { id: tourId } = req.params; // Retrieve tour ID from the route parameter
 
   try {
-      // Remove the user from the tour
-      await query(
-          `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
-          [userId, tourId]
-      );
+    // Remove the user from the tour
+    await query(
+      `DELETE FROM tour_guide WHERE guide_id = $1 AND tour_id = $2`,
+      [userId, tourId]
+    );
 
-      res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
+    res.status(200).json({ success: true, message: "Successfully withdrawn from the tour" });
   } catch (error) {
-      console.error("Error withdrawing from tour:", error.message || error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error withdrawing from tour:", error.message || error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+exports.fetchDoneTours = async (req, res) => {
+  try {
+    const doneTours = await getDoneTours();
+    res.status(200).json({
+      success: true,
+      data: doneTours,
+    });
+  } catch (error) {
+    console.error('Error in fetchDoneTours controller:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch done tours',
+    });
+  }
+};
+exports.getToursByUserId = async (req, res) => {
+  const { user_id } = req.query; // Expect a single user ID in the query parameter
+
+  if (!user_id) {
+    return res.status(400).json({ success: false, message: "No user ID provided" });
+  }
+
+  try {
+    const sql = `
+      SELECT DISTINCT t.id AS tour_id, t.date, s.school_name
+      FROM tours t
+      JOIN tour_guide tg ON t.id = tg.tour_id
+      JOIN schools s ON t.school_id = s.id
+      WHERE tg.guide_id = $1 AND t.tour_status = 'DONE';
+    `;
+
+    const result = await query(sql, [user_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Error fetching tours by user ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+exports.getUsersByTourId = async (req, res) => {
+  const { tour_id } = req.query; // Expect the tour ID in the query parameter
+
+  if (!tour_id) {
+    return res.status(400).json({ success: false, message: "No tour ID provided" });
+  }
+
+  try {
+    const sql = `
+      SELECT 
+        u.id AS user_id,
+        u.first_name,
+        u.last_name,
+        CASE WHEN u.user_type = 1 THEN 'Candidate' ELSE 'Guide' END AS role
+      FROM users u
+      JOIN tour_guide tg ON u.id = tg.guide_id
+      WHERE tg.tour_id = $1;
+    `;
+
+    const result = await query(sql, [tour_id]);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.error("Error fetching users by tour ID:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+

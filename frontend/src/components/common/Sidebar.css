@@ -2,16 +2,18 @@
 
 /* Sidebar Container */
 .sidebar {
-    width: 250px; /* Keep consistent width */
-    height: 100vh; /* Full height */
+    width: 250px; /* Sabit genişlik */
+    height: 100vh; /* Tam yükseklik */
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
-    border-right: 1px solid #ddd; /* Subtle divider */
-    padding-top: 10px; /* Add some padding for spacing */
-    position: fixed; /* Sidebar remains fixed */
-    justify-content: space-between;
+    border-right: 1px solid #ddd;
+    position: fixed;
+    justify-content: space-between; /* Footer'ı alta it */
+    overflow: hidden; /* Taşma durumlarını gizle */
+    padding-bottom: 5px; /* Reduced padding to save space */
     transition: width 0.3s ease;
+    transform: translateY(-10px); 
 }
 
 .sidebar.collapsed {
@@ -41,7 +43,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 15px; /* Keep padding for spacing */
+    padding: 1px 2px; /* Keep padding for spacing */
     margin-top: 0px; /* Reduce or remove margin to move header up */
     background-color: #ffffff;
     color: #000000;
@@ -61,15 +63,17 @@
 /* Profile Picture Wrapper */
 .profile-picture-wrapper {
     position: relative;
-    width: 70px;
-    height: 70px;
-    margin-bottom: 10px;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1px;
+    margin-top: -8px;
+    
 }
 
 /* Profile Picture */
 .profile-picture {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -111,8 +115,8 @@
 
 /* Loading Spinner */
 .profile-loading {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -121,12 +125,13 @@
 
 /* User Name */
 .sidebar__header h2 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
-    margin: 5px 0; /* Adjust margin for spacing */
+    margin: 3px 0; /* Adjust margin for spacing */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 12px;
 }
 
 /* Hide User Name when Sidebar is Collapsed */
@@ -136,11 +141,12 @@
 
 /* Dashboard Title */
 .sidebar__dashboard {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: normal;
     color: #000000;
-    margin: 15px; /* Adjust spacing for "Dashboard" text */
-    margin-bottom: 5px;
+    margin: 10px; /* Adjust spacing for "Dashboard" text */
+    margin-bottom: -12px;
+    margin-top: 2px;
     text-align: center;
 }
 
@@ -148,7 +154,7 @@
 .sidebar__divider {
     width: 90%; /* Adjust width as needed */
     border-top: 1px solid #ccc; /* Gray color */
-    margin: 10px auto 0 auto; /* 10px top margin, auto left/right */
+    margin: 6px auto 0 auto; /* 10px top margin, auto left/right */
 }
 
 /* Sidebar Menu */
@@ -163,7 +169,7 @@
 .menu__item {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 6px 8px;
     cursor: pointer;
     transition: background 0.3s, box-shadow 0.3s;
     font-size: 0.95rem;
@@ -197,28 +203,44 @@
 
 /* Sidebar Footer */
 .sidebar__footer {
-    padding: 10px;
-    border-top: 1px solid #ddd;
+    padding: 5px 10px;
+    border-top: 1px solid #ddd; /* Ayırıcı çizgi */
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
     align-items: center;
     background-color: #ffffff;
+    flex-shrink: 0; /* Footer'ın sabit kalmasını sağla */
 }
 
 .sidebar__footer .menu__item {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    background-color: #ffffff;
-    border-radius: 8px;
-    width: 90%; /* Full width footer buttons */
+    width: 100%; /* Tam genişlik */
     padding: 10px;
-    text-align: center;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .sidebar__footer .menu__item:hover {
     background-color: #f1f3f4;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar__footer .menu__item i {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.sidebar.collapsed .sidebar__footer {
+    align-items: center;
+    padding: 10px;
 }
 
 .sidebar__footer i {

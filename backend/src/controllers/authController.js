@@ -19,9 +19,11 @@ exports.register = async (req, res) => {
     const { userId, password } = await userService.createUser(req.body);
     await emailService.sendRegistrationEmail(req.body.email, password);
 
-    res
-      .status(200)
-      .json({ success: true, message: "User registered successfully." });
+    res.status(200).json({
+      success: true,
+      message: "User registered successfully.",
+      userId: userId,
+    });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ success: false, message: "Server error." });
@@ -45,7 +47,6 @@ exports.login = async (req, res) => {
     }
 
     const otp = await otpService.generateAndSaveOTP(user.id);
-
     await emailService.sendLoginOTPEmail(email, otp);
 
     const token = generateToken(user.id, user.user_type, true);
@@ -58,7 +59,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in login function:", error);
-    return res.status(500).json({ message: "server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

@@ -1,29 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userRepository = require("../repositories/UserRepository");
+const UserFactory = require("../factories/UserFactory");
 
 class UserService {
   async createUser(userData) {
-    const originalPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(originalPassword, 10);
-
-    const roleToUserType = {
-      "candidate guide": 1,
-      guide: 2,
-      advisor: 3,
-      coordinator: 4,
-    };
-
-    const userType = roleToUserType[userData.role];
-    const userId = await userRepository.createUser({
-      ...userData,
-      password: hashedPassword,
-      userType,
-    });
-
-    await this._handleRoleSpecificLogic(userId, userData.role, userData);
-
-    return { userId, password: originalPassword };
+    // Create the user via the factory and save it.
+    const user = UserFactory.createUser(userData);
+    const { userId, password } = await user.save();
+    return { userId, password };
   }
 
   async findUserByEmail(email) {
@@ -85,38 +70,6 @@ class UserService {
     await userRepository.resetPassword(token, hashedPassword);
 
     return true;
-  }
-
-  async _handleRoleSpecificLogic(userId, role, userData) {
-    if (role === "advisor") {
-      await this._createAdvisor(userId, userData);
-    } else if (role === "candidate guide") {
-      await this._createCandidateGuide(userId, userData);
-    }
-  }
-
-  async _createAdvisor(userId, { first_name, last_name, days }) {
-    const fullName = `${first_name} ${last_name}`;
-    await userRepository.createAdvisor(userId, fullName, days);
-  }
-
-  async _createCandidateGuide(
-    userId,
-    { first_name, last_name, department, advisor_name }
-  ) {
-    const advisor = await userRepository.findAdvisorByName(advisor_name);
-    if (!advisor) throw new Error("Advisor not found");
-
-    const advisorUserId = advisor.user_id;
-    const fullName = `${first_name} ${last_name}`;
-    await userRepository.createCandidateGuide(
-      userId,
-      advisorUserId,
-      advisor_name,
-      fullName,
-      department
-    );
-    await userRepository.updateAdvisorCandidateGuidesCount(advisorUserId);
   }
 
   async verifyPassword(plainPassword, hashedPassword) {

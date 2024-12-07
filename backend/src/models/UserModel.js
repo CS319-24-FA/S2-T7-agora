@@ -57,10 +57,7 @@ class UserModel {
   }
 
   static async findById(id) {
-    const result = await query(
-      "SELECT id, username, email FROM users WHERE id = $1",
-      [id]
-    );
+    const result = await query("SELECT * FROM users WHERE id = $1", [id]);
     if (result.rows[0]) {
       return new UserModel(result.rows[0]);
     }

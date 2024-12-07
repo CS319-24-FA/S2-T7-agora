@@ -156,9 +156,26 @@ const RealtimeStatus = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        width: "100vw",
+        padding: "20px",
+        boxSizing: "border-box",
+      }}
+    >
       {/* Map Container */}
-      <div style={{ flex: "2", position: "relative" }}>
+      <div
+        style={{
+          flex: "1",
+          position: "relative",
+          padding: "10px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          marginRight: "20px",
+        }}
+      >
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
           initialViewState={{
@@ -166,7 +183,7 @@ const RealtimeStatus = () => {
             latitude: userLocation.latitude,
             zoom: 15,
           }}
-          style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
+          style={{ width: "100%", height: "70vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v11"
         >
           <Marker
@@ -231,18 +248,16 @@ const RealtimeStatus = () => {
           )}
         </Map>
 
-        {/* Control Buttons */}
+        {/* Control Buttons Below Map */}
         <div
           style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
             display: "flex",
-            gap: "10px",
+            justifyContent: "space-between",
+            marginTop: "10px",
           }}
         >
           <button
-            onClick={handleStartTour}
+            onClick={isTourActive ? handleEndTour : handleStartTour}
             style={{
               padding: "8px 16px",
               backgroundColor: isTourActive ? "#f44336" : "#4CAF50",
@@ -275,11 +290,13 @@ const RealtimeStatus = () => {
         style={{
           flex: "1",
           overflowY: "auto",
-          padding: "20px",
+          padding: "10px",
           backgroundColor: "#f5f5f5",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
         }}
       >
-        <h2 style={{ marginBottom: "20px", fontSize: "1.5em" }}>
+        <h2 style={{ marginBottom: "20px", fontSize: "1.2em" }}>
           Nearby Locations
         </h2>
         {nearbyLocations.map((location) => (
@@ -287,10 +304,10 @@ const RealtimeStatus = () => {
             key={location.id}
             style={{
               backgroundColor: "white",
-              padding: "15px",
+              padding: "10px",
               marginBottom: "10px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              borderRadius: "6px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             <div
@@ -301,9 +318,13 @@ const RealtimeStatus = () => {
               }}
             >
               <div>
-                <h3 style={{ marginBottom: "8px" }}>{location.name}</h3>
-                <p>Distance: {Math.round(location.distance)}m</p>
-                <p>
+                <h3 style={{ marginBottom: "4px", fontSize: "1em" }}>
+                  {location.name}
+                </h3>
+                <p style={{ marginBottom: "2px", fontSize: "0.9em" }}>
+                  Distance: {Math.round(location.distance)}m
+                </p>
+                <p style={{ fontSize: "0.9em" }}>
                   Occupancy: {location.currentOccupancy}/{location.capacity}
                 </p>
               </div>
@@ -311,8 +332,8 @@ const RealtimeStatus = () => {
                 <button
                   onClick={() => handleStatusChange(location.id)}
                   style={{
-                    width: "24px",
-                    height: "24px",
+                    width: "20px",
+                    height: "20px",
                     borderRadius: "50%",
                     backgroundColor: getMarkerColor(location.status),
                     border: "2px solid #757575",

@@ -20,7 +20,7 @@ import MyTours from "../components/myTours/MyTours";
 import FairApprovalPage from "../pages/FairApprovalPage";
 import FairAssignmentPage from "../pages/FairAssignmentPage";
 import IndividualTourPage from "../pages/IndividualTourPage";
-
+import RealtimeStatus from "../pages/RealtimeStatus";
 import CancellationPage from "../pages/CancellationPage";
 
 const AppRoutes = () => {
@@ -43,7 +43,7 @@ const AppRoutes = () => {
       <Route path="/data-insight" element={<DataInsightPage />} />
       <Route path="/approve-tour" element={<TourApprovalPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
-
+      <Route path="/realtime-status" element={<RealtimeStatus />} />
       <Route path="/my-tours" element={<MyTours />} />
       <Route path="/approve-fair" element={<FairApprovalPage />} />
       <Route path="/assign-fair" element={<FairAssignmentPage />} />

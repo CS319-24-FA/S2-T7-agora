@@ -2,6 +2,7 @@ const { verifyToken, generateToken } = require("../utils/jwt");
 const emailService = require("../services/EmailService");
 const userService = require("../services/UserService");
 const otpService = require("../services/OtpService.js");
+const pool = require('../config/database'); // Adjust the path based on your project structure
 
 exports.register = async (req, res) => {
   try {
@@ -16,19 +17,76 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "User already exists." });
     }
 
-    const { userId, password } = await userService.createUser(req.body);
-    await emailService.sendRegistrationEmail(req.body.email, password);
+    // Ensure `days` is stored as an array in the database for advisors
+    const userPayload = {
+      ...req.body,
+      days: Array.isArray(req.body.days) ? req.body.days : [req.body.days],
+    };
+    
+    if (req.body.role === "coordinator") {
+      userPayload.crew_no = 1;
+    }
 
+<<<<<<< HEAD
     res.status(200).json({
       success: true,
       message: "User registered successfully.",
       userId: userId,
     });
+=======
+    const { userId, password } = await userService.createUser(userPayload);
+
+    if (req.body.role === "advisor") {
+      // Save or update the advisor in the advisors table
+      await pool.query(
+        `INSERT INTO advisors 
+         (user_id, day, full_name, created_at, updated_at) 
+         VALUES ($1, $2, $3, NOW(), NOW()) 
+         ON CONFLICT (user_id) 
+         DO UPDATE SET day = EXCLUDED.day, 
+                       full_name = EXCLUDED.full_name, 
+                       updated_at = NOW()`,
+        [userId, req.body.days.join(","), `${req.body.first_name} ${req.body.last_name}`]
+      );
+    } else if (req.body.role === "candidate guide") {
+      const advisor = await userService.findAdvisorByName(req.body.advisor_name);
+      if (!advisor) {
+        return res.status(404).json({ message: "Advisor not found." });
+      }
+
+      // Save or update the candidate guide in the candidate_guides table
+      await pool.query(
+        `INSERT INTO candidate_guides 
+         (user_id, advisor_user_id, advisor_name, full_name, department, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) 
+         ON CONFLICT (user_id) 
+         DO UPDATE SET advisor_user_id = EXCLUDED.advisor_user_id, 
+                       advisor_name = EXCLUDED.advisor_name, 
+                       full_name = EXCLUDED.full_name, 
+                       department = EXCLUDED.department, 
+                       updated_at = NOW()`,
+        [
+          userId,
+          advisor.user_id,
+          req.body.advisor_name,
+          `${req.body.first_name} ${req.body.last_name}`,
+          req.body.department,
+        ]
+      );
+    }
+
+    await emailService.sendRegistrationEmail(req.body.email, password);
+    res
+      .status(200)
+      .json({ success: true, message: "User registered successfully." });
+>>>>>>> 4da22dd97c86aadab89f12eda8be834d3f85beb5
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

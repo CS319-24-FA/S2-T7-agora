@@ -3,17 +3,15 @@ import Sidebar from "../components/common/Sidebar";
 import TourDaysChart from "../components/data/TourDaysChart";
 import CancellationStatsPieChart from "../components/data/CancellationStatsChart";
 import ToursByCityChart from "../components/data/ToursByCityChart"; // Import the new component
-import SchoolStudentChart from "../components/data/SchoolStudent"; // Yeni komponenti ekliyoruz
-import { fetchTourData, fetchSchoolStudentData } from "../services/DataService";
+import SchoolStudentChart from "../components/data/SchoolStudent"; // Corrected import
+import { fetchTourData } from "../services/DataService"; // Removed fetchSchoolStudentData
 import "./DataInsightPage.css";
-
 
 const DataInsightPage = () => {
   const [filter, setFilter] = useState("weekly");
   const [periodIndex, setPeriodIndex] = useState(0);
   const [tourData, setTourData] = useState(null);
-  const [schoolStudentData, setSchoolStudentData] = useState(null);
-
+  
   useEffect(() => {
     setPeriodIndex(0); 
   }, [filter]);
@@ -31,19 +29,6 @@ const DataInsightPage = () => {
     getData();
   }, [filter, periodIndex]);
 
-  useEffect(() => {
-    const getSchoolData = async () => {
-      try {
-        const data = await fetchSchoolStudentData();
-        setSchoolStudentData(data.schoolData);
-      } catch (error) {
-        console.error("Error fetching school student data:", error);
-      }
-    };
-
-    getSchoolData();
-  }, []);
-
   const maxPeriod =
     filter === "weekly" ? 3 : filter === "monthly" ? 11 : filter === "yearly" ? 5 : 0;
 
@@ -59,6 +44,11 @@ const DataInsightPage = () => {
     }
   };
 
+  const handleFilterChange = (type) => {
+    setFilter(type.toLowerCase());
+    // Removed setCurrentYear as it's now managed within SchoolStudentChart
+  };
+
   return (
     <div className="data-insight-page">
       <Sidebar />
@@ -69,7 +59,7 @@ const DataInsightPage = () => {
             <button
               key={type}
               className={filter.toLowerCase() === type.toLowerCase() ? "active" : ""}
-              onClick={() => setFilter(type.toLowerCase())}
+              onClick={() => handleFilterChange(type)}
             >
               {type}
             </button>
@@ -105,12 +95,7 @@ const DataInsightPage = () => {
                 handleNext={handleNext}
                 maxPeriod={maxPeriod}
               />
-               {schoolStudentData ? (
-                <SchoolStudentChart data={schoolStudentData} />
-              ) : (
-                <p>Loading school data...</p>
-              )}
-
+              <SchoolStudentChart /> {/* Removed props */}
             </>
           ) : (
             <p>Loading...</p>

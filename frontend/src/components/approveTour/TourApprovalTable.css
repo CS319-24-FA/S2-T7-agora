@@ -1,25 +1,125 @@
-/* Bright green row for Approved/Ready tours */
+/* src/components/TourApprovalTable.css */
+
+/* Container for the entire TourApprovalTable component */
+.tour-approval-table-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px; /* Adds rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+}
+
+/* Title Styling */
+.tour-approval-table-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ffffff;
+}
+
+/* Filter and Sorting Container */
+.filter-sort-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Space between filter elements */
+    margin-bottom: 20px;
+}
+
+/* Styles for FilterByStatus component */
+.filter-by-status {
+    display: flex;
+    align-items: center;
+}
+
+.filter-label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Styles for SortByDate component */
+.sort-by-date {
+    display: flex;
+    align-items: center;
+}
+
+.sort-label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.p-dropdown {
+    /* Optional: Customize the dropdown appearance */
+    min-width: 200px;
+}
+
+/* Row Coloring */
 .green-row {
-    background-color: #a8f0a0 !important; /* Bright green */
-    color: #064e3b !important;           /* Deep green text for contrast */
-    font-weight: 600;
+    background-color: #d4edda !important; /* Light green */
 }
 
-/* Bright yellow row for Waiting tours */
 .yellow-row {
-    background-color: #fff380 !important; /* Bright yellow */
-    color: #854d0e !important;            /* Dark golden text for contrast */
-    font-weight: 600;
+    background-color: #fff3cd !important; /* Light yellow */
 }
 
-/* Bright red row for Rejected/Canceled tours */
 .red-row {
-    background-color: #ff7f7f !important; /* Bright red */
-    color: #8b0000 !important;           /* Dark red text for contrast */
-    font-weight: 600;
+    background-color: #f8d7da !important; /* Light red */
 }
-.table-container {
-    width: 110%; /* Full width of the viewport */
-    overflow: hidden; /* Prevent overflow */
-    padding: 0 16px; /* Add some padding around the table */
+
+/* DataTable Styling */
+.p-datatable {
+    border: none;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    background-color: #e9ecef;
+    text-align: center;
+    color: #495057;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    text-align: center;
+    color: #495057;
+}
+
+/* Dialog Styling */
+.p-dialog {
+    border-radius: 8px;
+}
+
+.p-dialog .p-dialog-header {
+    background-color: #007ad9;
+    color: white;
+}
+
+.p-dialog .p-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filter-sort-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-by-status,
+    .sort-by-date {
+        width: 100%;
+    }
+
+    .filter-by-status .p-dropdown,
+    .sort-by-date .p-dropdown {
+        width: 100%;
+    }
+
+    .tour-approval-table-container {
+        padding: 10px;
+    }
+
+    .p-datatable {
+        overflow-x: auto;
+    }
 }

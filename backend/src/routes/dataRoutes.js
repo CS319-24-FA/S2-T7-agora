@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { getData, getSchoolStudentData } = require("../controllers/dataController");
+const { getData, getYearlySchoolStudentData } = require("../controllers/dataController");
 
-router.get("/school-student-data", getSchoolStudentData);
-router.get("/:filter/:periodIndex", getData);
+// Specific route first
+router.get("/yearly/:year", getYearlySchoolStudentData); 
+// General route after
+router.get("/:filter/:periodIndex", getData); 
 
 module.exports = router;

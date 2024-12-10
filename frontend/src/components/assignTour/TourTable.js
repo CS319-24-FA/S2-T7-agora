@@ -280,13 +280,13 @@ export default function ReadyToursTable() {
             body={(rowData) => formatTime(rowData.time)}
             style={{ width: "10%" }}
           ></Column>
-
-          {/* School Column */}
+        {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+          <>{/* School Column */}
           <Column field="school_name" header="School" style={{ width: "20%" }}></Column>
-
+          
           {/* City Column */}
           <Column field="city" header="City" style={{ width: "10%" }}></Column>
-
+      
           {/* Tour Size Column */}
           <Column field="tour_size" header="Tour Size" style={{ width: "10%" }}></Column>
           <Column
@@ -320,10 +320,11 @@ export default function ReadyToursTable() {
               return rowData.classroom || "Not Assigned";
             }}
             style={{ width: "15%" }}
-          />
+          /> </> )}
 
 
           {/* Guide Quota Column */}
+          {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
           <Column
             field="assigned_guides"
             header="Guide #"
@@ -333,8 +334,8 @@ export default function ReadyToursTable() {
             
             style={{ width: "10%" }}
           ></Column>
-
-          {/* Candidate Quota Column */}
+          )}
+        {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
           <Column
             field="assigned_candidates"
             header="Candidate #"
@@ -343,24 +344,27 @@ export default function ReadyToursTable() {
             }
             style={{ width: "10%" }}
           ></Column>
+        )}
+          {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+            <Column
+              header="Be Guide"
+              body={(rowData) => {
+                if (rowData.tour_status === "READY") {
+                  return (
+                    <Button
+                      icon="pi pi-plus"
+                      className="p-button-rounded p-button-success"
+                      onClick={() => handleAssignGuide(rowData)}
+                      style={{ width: "45px" }}
+                    />
+                  );
+                }
+                return null;
+              }}
+              style={{ width: "10%" }}
+            ></Column>
+          )}
 
-          <Column
-            header="Be Guide"
-            body={(rowData) => {
-              if (rowData.tour_status === "READY") {
-                return (
-                  <Button
-                    icon="pi pi-plus"
-                    className="p-button-rounded p-button-success"
-                    onClick={() => handleAssignGuide(rowData)}
-                    style={{ width: "45px" }}
-                  />
-                );
-              }
-              return null;
-            }}
-            style={{ width: "10%" }}
-          ></Column>
           {localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' ?
             (<Column
               header="Assign Candidate"

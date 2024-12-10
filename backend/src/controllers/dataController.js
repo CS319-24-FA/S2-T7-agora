@@ -137,32 +137,87 @@ exports.getData = async (req, res) => {
 
 };
 
-exports.getSchoolStudentData = async (req, res) => {
+exports.getYearlySchoolStudentData = async (req, res) => {
+  const { year } = req.params;
+
+  // Validate the 'year' parameter
+  const yearInt = parseInt(year, 10);
+  if (isNaN(yearInt)) {
+    return res.status(400).json({ error: "Invalid or missing year parameter" });
+  }
+
   try {
-    const query = `
-      SELECT s.id, s.school_name, s.student_count, s.student_sent_last1, s.student_sent_last2, s.student_sent_last3
-      FROM schools s
-      WHERE s.id IN (SELECT DISTINCT school_id FROM tours)
+    console.log(`Fetching data for year: ${yearInt}`); // Debugging
+
+    // Query to sum tour_size for each school_id within the specified year
+    const toursQuery = `
+      SELECT
+        t.school_id,
+        SUM(t.tour_size) AS total_tour_size
+      FROM tours t
+      WHERE EXTRACT(YEAR FROM t.date::DATE) = $1
+      GROUP BY t.school_id
     `;
-    const result = await db.query(query);
+    const toursResult = await db.query(toursQuery, [yearInt]);
 
-    const schoolData = result.rows.map((row) => ({
-      id: row.id,
-      school_name: row.school_name,
-      student_count: parseInt(row.student_count, 10) || 0,
-      student_sent_last_total:
-        (parseInt(row.student_sent_last1, 10) || 0) +
-        (parseInt(row.student_sent_last2, 10) || 0) +
-        (parseInt(row.student_sent_last3, 10) || 0),
-    }));
+    console.log("Tours Result:", toursResult.rows); // Debugging
 
-    res.json({ schoolData });
+    // Query to fetch school details (e.g., names and student_sent counts)
+    const schoolsQuery = `
+      SELECT
+        s.id,
+        s.school_name,
+        s.student_sent_last1,
+        s.student_sent_last2,
+        s.student_sent_last3
+      FROM schools s
+      WHERE s.id IN (
+        SELECT DISTINCT t.school_id
+        FROM tours t
+        WHERE EXTRACT(YEAR FROM t.date::DATE) = $1
+      )
+    `;
+    const schoolsResult = await db.query(schoolsQuery, [yearInt]);
+
+    console.log("Schools Result:", schoolsResult.rows); // Debugging
+
+    // Combine the data from tours and schools
+    const schoolDataMap = {};
+
+    // Add tour data (total_tour_size) to the map
+    toursResult.rows.forEach((row) => {
+      const schoolId = parseInt(row.school_id, 10);
+      schoolDataMap[schoolId] = {
+        school_id: schoolId,
+        total_tour_size: parseInt(row.total_tour_size, 10) || 0,
+      };
+    });
+
+    // Add school details (e.g., name, sent counts) to the map
+    schoolsResult.rows.forEach((row) => {
+      const schoolId = parseInt(row.id, 10);
+      if (schoolDataMap[schoolId]) {
+        schoolDataMap[schoolId] = {
+          ...schoolDataMap[schoolId],
+          school_name: row.school_name,
+          sent_last1: parseInt(row.student_sent_last1, 10) || 0, // Current year
+          sent_last2: parseInt(row.student_sent_last2, 10) || 0, // Previous year
+          sent_last3: parseInt(row.student_sent_last3, 10) || 0, // Two years ago
+        };
+      }
+    });
+
+    // Convert the map to an array
+    const schoolData = Object.values(schoolDataMap);
+
+    console.log("Final School Data:", schoolData); // Debugging
+
+    res.json({ year: yearInt, schoolData });
   } catch (error) {
-    console.error("Error fetching school student data:", error);
-    res.status(500).json({ error: "Failed to fetch school student data" });
+    console.error("Error fetching yearly school student data:", error);
+    res.status(500).json({ error: "Failed to fetch yearly school student data" });
   }
 };
-
 
 
 

@@ -1,7 +1,10 @@
 import axios from "axios";
 
-// Base URL configuration
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+
+if (!process.env.REACT_APP_BACKEND_URL) {
+    console.warn("REACT_APP_BACKEND_URL is not defined. Using default URL: http://localhost:3001");
+}
 
 // Function to get all tours
 export const getAllTours = async () => {

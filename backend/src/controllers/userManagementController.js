@@ -4,23 +4,30 @@ exports.removeUser = async (req, res) => {
     const { email } = req.body;
 
     try {
-        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        // Check if the user exists in the users table
+        const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
-        if (user.rows.length === 0) {
+        if (userResult.rows.length === 0) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const userId = user.rows[0].id;
+        const userId = userResult.rows[0].id; // Get user ID
+        const userRole = userResult.rows[0].role; // Get user role
 
-        // Remove user from related tables
-        await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
-        await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
-        await pool.query("DELETE FROM users WHERE email = $1", [email]);
+        // Remove user-specific records based on their role
+        if (userRole === "advisor") {
+            await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
+        } else if (userRole === "candidate guide") {
+            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
+        }
 
-        res.status(200).json({ message: "User removed successfully" });
+        // Remove the user from the main users table
+        await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+
+        res.status(200).json({ message: "User removed successfully from all relevant tables." });
     } catch (error) {
         console.error("Error removing user:", error);
-        res.status(500).json({ error: "An error occurred while removing the user" });
+        res.status(500).json({ error: "An error occurred while removing the user." });
     }
 };
 
@@ -29,81 +36,72 @@ exports.changeUserRole = async (req, res) => {
     const { email, new_role, days } = req.body;
 
     try {
-        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        // Fetch user details
+        const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
-        if (user.rows.length === 0) {
+        if (userResult.rows.length === 0) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const userId = user.rows[0].id;
-        const current_role = user.rows[0].role;
+        const userId = userResult.rows[0].id;
+        const currentRole = userResult.rows[0].role;
 
-        const roleToUserType = {
-            "candidate guide": 1,
-            guide: 2,
-            advisor: 3,
-        };
-
-        const allowedRoles = Object.keys(roleToUserType);
-        if (!allowedRoles.includes(new_role)) {
-            return res.status(400).json({ message: "Invalid role specified" });
+        // If the new role is the same as the current role, return a warning
+        if (currentRole === new_role) {
+            return res.status(400).json({ message: `User is already a ${new_role}.` });
         }
 
-        // Update role and user_type in users table
+        // Define role to user_type mapping
+        const roleToUserType = {
+            guide: 2,
+            advisor: 3,
+            coordinator: 4,
+        };
+
+        // Validate role
+        if (!Object.keys(roleToUserType).includes(new_role)) {
+            return res.status(400).json({ message: "Invalid role specified." });
+        }
+
+        // Update the role and user_type in the users table
         await pool.query(
             "UPDATE users SET role = $1, user_type = $2 WHERE id = $3",
             [new_role, roleToUserType[new_role], userId]
         );
 
-        // Remove user from old role-specific tables
-        if (current_role === "advisor") {
-            await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
-        } else if (current_role === "candidate guide") {
-            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
-        }
-
-        // Add user to the new role-specific table
+        // Handle specific role-based actions
         if (new_role === "advisor") {
-            if (!days) {
-                return res.status(400).json({ message: "Days are required for advisor role" });
-            }
-            await pool.query(
-                `INSERT INTO advisors (user_id, day, full_name, candidate_guides_count, created_at, updated_at)
-                 VALUES ($1, $2, $3, 0, NOW(), NOW())
-                 ON CONFLICT (user_id) DO UPDATE 
-                 SET day = EXCLUDED.day, 
-                     full_name = EXCLUDED.full_name,
-                     updated_at = NOW()`,
-                [userId, days, `${user.rows[0].first_name} ${user.rows[0].last_name}`]
-            );
-        } /*else if (new_role === "candidate guide") {
-            const advisor = await pool.query("SELECT user_id FROM advisors WHERE day = $1 LIMIT 1", [days]);
-
-            if (advisor.rows.length === 0) {
-                return res.status(404).json({ message: "No advisor found for the specified days" });
+            if (!days || days.length === 0) {
+                return res.status(400).json({ message: "Days are required for advisor role." });
             }
 
+            // Add or update the user in the advisors table
             await pool.query(
-                `INSERT INTO candidate_guides (user_id, advisor_user_id, full_name, department, created_at, updated_at)
-                 VALUES ($1, $2, $3, $4, NOW(), NOW())
-                 ON CONFLICT (user_id) DO UPDATE 
-                 SET advisor_user_id = EXCLUDED.advisor_user_id,
-                     updated_at = NOW()`,
-                [user_id, advisor.rows[0].user_id, `${user.rows[0].first_name} ${user.rows[0].last_name}`, user.rows[0].department]
+                `INSERT INTO advisors (user_id, day, full_name, created_at, updated_at)
+                 VALUES ($1, $2, $3, NOW(), NOW())
+                 ON CONFLICT (user_id)
+                 DO UPDATE SET day = EXCLUDED.day, updated_at = NOW()`,
+                [userId, days.join(","), `${userResult.rows[0].first_name} ${userResult.rows[0].last_name}`]
             );
-        }*/
-        // Remove user from advisors and candidate_guides if switching to guide
-        if (new_role === "guide") {
-            await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
-            await pool.query("DELETE FROM candidate_guides WHERE user_id = $1", [userId]);
+        } else {
+            // If the old role is advisor and the new role is not, remove the user from the advisors table
+            if (currentRole === "advisor") {
+                await pool.query("DELETE FROM advisors WHERE user_id = $1", [userId]);
+            }
         }
 
-        res.status(200).json({ message: "User role updated successfully in all relevant tables" });
+        if (new_role === "coordinator") {
+            // Set crew_no to 1 for coordinators
+            await pool.query("UPDATE users SET crew_no = $1 WHERE id = $2", [1, userId]);
+        }
+
+        res.status(200).json({ message: `User role updated to ${new_role} successfully.` });
     } catch (error) {
         console.error("Error updating user role:", error);
-        res.status(500).json({ error: "An error occurred while updating the user role" });
+        res.status(500).json({ error: "An error occurred while updating the user role." });
     }
 };
+
 
 
 
@@ -121,9 +119,17 @@ exports.updateCrewNo = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const userId = user.rows[0].id;
+        const userId = user.rows[0].id; // Correctly fetch the user ID from the table
+        const currentCrewNo = user.rows[0].crew_no; // Fetch the current crew number
+        console.log(currentCrewNo);
+        console.log(crew_no);
+        // Check if the new crew number is the same as the current one
+        if (currentCrewNo == crew_no) {
+            return res.status(400).json({ message: "The new crew number is the same as the current one." });
+        }
 
-        await pool.query("UPDATE users SET crew_no = $1 WHERE user_id = $2", [crew_no, userId]);
+        // Use the correct column name for the primary key in the users table
+        await pool.query("UPDATE users SET crew_no = $1 WHERE id = $2", [crew_no, userId]);
 
         res.status(200).json({ message: "Crew number updated successfully" });
     } catch (error) {
@@ -131,6 +137,7 @@ exports.updateCrewNo = async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating the crew number" });
     }
 };
+
 
 exports.getAdvisors = async (req, res) => {
     try {

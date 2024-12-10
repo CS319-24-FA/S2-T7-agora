@@ -1,0 +1,16 @@
+/* src/components/FilterByStatus.css */
+
+.filter-by-status {
+    display: flex;
+    align-items: center;
+}
+
+.filter-label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.p-dropdown {
+    /* Optional: Customize the dropdown appearance */
+    min-width: 200px;
+}

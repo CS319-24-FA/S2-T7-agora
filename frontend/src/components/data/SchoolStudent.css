@@ -1,50 +1,96 @@
+/* SchoolStudent.css */
+
 .chart-container {
-    width: 100%;
-    max-width: 1200px; 
-    margin: 20px auto; 
-    background-color: #fff; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    border-radius: 10px; 
-    padding: 20px; 
-  }
-  
-  .chart-title {
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 20px; 
-  }
-  
-  .chart-shadow {
-    padding: 20px;
-    background-color: #fff; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-    border-radius: 8px; 
-  }
-  
-  .navigation-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-  }
-  
-  .navigation-buttons button {
-    background-color: #5a6268;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    margin: 0 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .navigation-buttons button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .navigation-buttons span {
-    font-size: 16px;
-  }
-  
+  width: 100%;
+  max-width: 1200px; 
+  margin: 20px auto; 
+  background-color: #fff; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  border-radius: 10px; 
+  padding: 20px; 
+}
+.year-selector-modern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.year-button {
+  background-color: #5a6268;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.year-button:hover {
+  background-color: #0056b3;
+}
+
+.year-display {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 0 10px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+}
+
+.year-selector button {
+  margin: 0 5px;
+  padding: 5px 10px;
+}
+
+.year-selector input {
+  width: 80px;
+  text-align: center;
+  padding: 5px;
+}
+
+.chart-shadow {
+  padding: 20px;
+  background-color: #fff; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  border-radius: 8px; 
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.navigation-buttons button {
+  background-color: #5a6268;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navigation-buttons button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.navigation-buttons span {
+  font-size: 16px;
+}

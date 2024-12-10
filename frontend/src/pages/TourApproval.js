@@ -9,7 +9,6 @@ function TourApprovalPage() {
             <div className="sidebar-container">
                 <Sidebar />
             </div>
-
             {/* Main Content Section */}
             <div className="main-content-container">
                 <TourApprovalTable />

@@ -7,22 +7,25 @@ const getAdvisors = async (req, res) => {
             SELECT 
                 a.user_id AS advisor_id,
                 a.full_name AS advisor_name,
-                a.day,
-                json_agg(
-                    json_build_object(
-                        'full_name', cg.full_name,
-                        'department', cg.department,
-                        'phone_number', cg.phone_number
-                    )
+                ARRAY_AGG(DISTINCT a.day) AS days, -- Array of days
+                COALESCE(
+                    json_agg(
+                        json_build_object(
+                            'full_name', cg.full_name,
+                            'department', cg.department,
+                            'phone_number', cg.phone_number
+                        )
+                    ) FILTER (WHERE cg.full_name IS NOT NULL),
+                    '[]'
                 ) AS candidate_guides
             FROM advisors a
             LEFT JOIN candidate_guides cg ON a.user_id = cg.advisor_user_id
-            GROUP BY a.user_id, a.full_name, a.day
+            GROUP BY a.user_id, a.full_name
             ORDER BY a.user_id ASC;
         `);
         res.json(result.rows);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching advisors:", error);
         res.status(500).send("Server error");
     }
 };

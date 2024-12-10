@@ -8,34 +8,45 @@ const AdvisorTable = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        const fetchAdvisors = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get("http://localhost:3001/advisors");
+                setAdvisors(response.data);
+            } catch (error) {
+                console.error("Error fetching advisors:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchAdvisors();
     }, []);
 
-    const fetchAdvisors = async () => {
-        try {
-            const response = await axios.get("http://localhost:3001/advisors");
-            setAdvisors(response.data);
-        } catch (error) {
-            console.error("Error fetching advisors:", error);
-        }
+    const renderCandidateGuides = (rowData) => {
+        return (
+            <ul>
+                {rowData.candidate_guides?.map((guide, index) => (
+                    <li key={index}>
+                        {guide.full_name} ({guide.department})
+                    </li>
+                ))}
+            </ul>
+        );
     };
 
     return (
         <div>
             <h1>Advisor Table</h1>
-            <DataTable value={advisors} responsiveLayout="scroll" loading={loading}>
-                <Column field="full_name" header="Advisor Name"></Column>
-                <Column field="day" header="Day"></Column>
-                <Column
-                    header="Candidate Guides"
-                    body={(rowData) => (
-                        <ul>
-                            {rowData.candidateGuides?.map((guide, index) => (
-                                <li key={index}>{guide.full_name}</li>
-                            ))}
-                        </ul>
-                    )}
-                ></Column>
+            <DataTable
+                value={advisors}
+                responsiveLayout="scroll"
+                loading={loading}
+                style={{ width: "80%", margin: "auto" }}
+            >
+                <Column field="advisor_name" header="Advisor Name"></Column>
+                <Column field="days" header="Days" body={(rowData) => rowData.days.join(", ")}></Column>
+                <Column header="Candidate Guides" body={renderCandidateGuides}></Column>
             </DataTable>
         </div>
     );

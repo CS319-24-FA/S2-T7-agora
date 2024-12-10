@@ -4,7 +4,6 @@ import ProfileSettings from '../components/settings/ProfileSettings';
 import ChangePassword from '../components/settings/ChangePassword';
 import About from '../components/settings/About';
 import HelpSupport from '../components/settings/HelpSupport';
-import Appearance from '../components/settings/Appearance';
 import Uploads from '../components/settings/Uploads'; // Import the Uploads component
 
 import { AuthContext } from '../context/AuthContext';
@@ -28,8 +27,6 @@ const SettingsPage = () => {
                             return <ProfileSettings userEmail={userEmail} userType={userType} />;
                         case 'changePassword':
                             return <ChangePassword userEmail={userEmail} />;
-                        case 'appearance':
-                            return <Appearance />;
                         case 'helpSupport':
                             return <HelpSupport />;
                         case 'about':
@@ -66,12 +63,7 @@ const SettingsPage = () => {
                     >
                         <i className="pi pi-key"></i> Change Password
                     </button>
-                    <button
-                        className={activeTab === 'appearance' ? 'active-tab' : ''}
-                        onClick={() => setActiveTab('appearance')}
-                    >
-                        <i className="pi pi-eye"></i> Appearance
-                    </button>
+                
                     <button
                         className={activeTab === 'helpSupport' ? 'active-tab' : ''}
                         onClick={() => setActiveTab('helpSupport')}

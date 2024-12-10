@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./UserManagementPage.css"; // Include CSS for styling
 import Sidebar from "../components/common/Sidebar";
+import { MultiSelect } from "primereact/multiselect"; // Import MultiSelect component
+
+const daysOptions = [
+    { label: "Monday", value: "Monday" },
+    { label: "Tuesday", value: "Tuesday" },
+    { label: "Wednesday", value: "Wednesday" },
+    { label: "Thursday", value: "Thursday" },
+    { label: "Friday", value: "Friday" },
+    { label: "Weekend", value: "Weekend" },
+];
 
 const UserManagementPage = () => {
     const [action, setAction] = useState("register"); // Default to "register"
@@ -15,9 +25,8 @@ const UserManagementPage = () => {
         phone_number: "",
         crew_no: "",
         advisor_name: "",
-        days: "",
+        days: [],
     });
-    const [additionalFields, setAdditionalFields] = useState([]); // For dynamic fields
     const [error, setError] = useState("");
 
     // Fetch advisors on component mount
@@ -30,27 +39,12 @@ const UserManagementPage = () => {
                 console.error("Error fetching advisors:", error);
             }
         };
-
         fetchAdvisors();
     }, []);
 
     const handleActionChange = (e) => {
         setAction(e.target.value);
         resetForm();
-    };
-
-    const handleRoleChange = (e) => {
-        const role = e.target.value;
-        setFormData({ ...formData, role });
-
-        // Adjust additional fields based on the role
-        if (role === "candidate guide") {
-            setAdditionalFields(["advisor_name"]);
-        } else if (role === "advisor") {
-            setAdditionalFields(["days"]);
-        } else {
-            setAdditionalFields([]);
-        }
     };
 
     const handleChange = (e) => {
@@ -67,32 +61,66 @@ const UserManagementPage = () => {
             phone_number: "",
             crew_no: "",
             advisor_name: "",
-            days: "",
+            days: [],
         });
-        setAdditionalFields([]);
         setError("");
     };
 
+    // Form submission handlers
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
-
-        // Ensure required fields based on the role
-        if (formData.role === "advisor" && !formData.days) {
-            alert("Advisor role requires 'days'.");
-            return;
-        }
-        if (formData.role === "candidate guide" && !formData.advisor_name) {
-            alert("Candidate guide role requires selecting an advisor.");
-            return;
-        }
-
         try {
             const response = await axios.post("http://localhost:3001/auth/register", formData);
             alert(response.data.message);
-            resetForm(); // Clear form after successful submission
+            resetForm();
         } catch (error) {
             console.error("Error during registration:", error);
             alert(error.response?.data?.message || "An error occurred while registering.");
+        }
+    };
+
+    const handleRemoveUserSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("http://localhost:3001/user-management/remove", {
+                email: formData.email,
+            });
+            alert(response.data.message);
+            resetForm();
+        } catch (error) {
+            console.error("Error removing user:", error);
+            alert(error.response?.data?.message || "An error occurred while removing the user.");
+        }
+    };
+
+    const handleChangeRoleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("http://localhost:3001/user-management/changeRole", {
+                email: formData.email,
+                new_role: formData.role,
+                days: formData.days,
+            });
+            alert(response.data.message);
+            resetForm();
+        } catch (error) {
+            console.error("Error changing role:", error);
+            alert(error.response?.data?.message || "An error occurred while changing the role.");
+        }
+    };
+
+    const handleUpdateCrewNoSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post("http://localhost:3001/user-management/updateCrewNo", {
+                email: formData.email,
+                crew_no: formData.crew_no,
+            });
+            alert(response.data.message);
+            resetForm();
+        } catch (error) {
+            console.error("Error updating crew number:", error);
+            alert(error.response?.data?.message || "An error occurred while updating the crew number.");
         }
     };
 
@@ -102,13 +130,12 @@ const UserManagementPage = () => {
             <div className="user-management-page">
                 <h1>User Management</h1>
                 <div className="action-selector">
-                    <label htmlFor="action">Select Action:</label>
-                    <select id="action" value={action} onChange={handleActionChange}>
-                        <option value="">-- Select --</option>
-                        <option value="register">Register User</option>
-                        <option value="remove">Remove User</option>
-                        <option value="change">Change User Status</option>
-                        <option value="updateCrewNo">Update Crew Number</option>
+                    <label>Select Action:</label>
+                    <select value={action} onChange={handleActionChange}>
+                        <option value="register">Register</option>
+                        <option value="changeStatus">Change Status</option>
+                        <option value="removeByEmail">Remove User</option>
+                        <option value="updateCrewNo">Update Crew No</option>
                     </select>
                 </div>
 
@@ -147,46 +174,49 @@ const UserManagementPage = () => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Department:</label>
-                                <input
-                                    type="text"
-                                    name="department"
-                                    value={formData.department}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Phone Number:</label>
-                                <input
-                                    type="text"
-                                    name="phone_number"
-                                    value={formData.phone_number}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
                                 <label>Role:</label>
                                 <select
                                     name="role"
                                     value={formData.role}
-                                    onChange={handleRoleChange}
+                                    onChange={(e) => {
+                                        const selectedRole = e.target.value;
+                                        setFormData((prevFormData) => ({
+                                            ...prevFormData,
+                                            role: selectedRole,
+                                            days: selectedRole === "advisor" ? [] : prevFormData.days,
+                                            advisor_name: selectedRole === "candidate guide" ? "" : prevFormData.advisor_name,
+                                        }));
+                                    }}
                                     required
                                 >
                                     <option value="">Select Role</option>
                                     <option value="candidate guide">Candidate Guide</option>
-                                    <option value="guide">Guide</option>
                                     <option value="advisor">Advisor</option>
+                                    <option value="guide">Guide</option>
+                                    <option value="coordinator">Coordinator</option> {/* Add Coordinator Option */}
                                 </select>
                             </div>
-                            {additionalFields.includes("advisor_name") && (
+
+                            {formData.role === "advisor" && (
                                 <div className="form-group">
-                                    <label>Advisor Name:</label>
+                                    <label>Available Days:</label>
+                                    <MultiSelect
+                                        value={formData.days}
+                                        options={daysOptions}
+                                        onChange={(e) => setFormData({ ...formData, days: e.value })}
+                                        placeholder="Select Days"
+                                        display="chip"
+                                        required
+                                    />
+                                </div>
+                            )}
+                            {formData.role === "candidate guide" && (
+                                <div className="form-group">
+                                    <label>Select Advisor:</label>
                                     <select
                                         name="advisor_name"
                                         value={formData.advisor_name}
-                                        onChange={handleChange}
+                                        onChange={(e) => setFormData({ ...formData, advisor_name: e.target.value })}
                                         required
                                     >
                                         <option value="">Select Advisor</option>
@@ -198,19 +228,110 @@ const UserManagementPage = () => {
                                     </select>
                                 </div>
                             )}
-                            {additionalFields.includes("days") && (
+                            <button type="submit">Register</button>
+                        </form>
+                    </div>
+                )}
+            {action === "removeByEmail" && (
+                <div className="form-container">
+                    <h2>Remove User by Email</h2>
+                    <form onSubmit={handleRemoveUserSubmit}>
+                        <div className="form-group">
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <button type="submit">Remove User</button>
+                    </form>
+                </div>
+            )}
+
+            {action === "changeStatus" && (
+                    <div className="form-container">
+                        <h2>Change User Status</h2>
+                        <form onSubmit={handleChangeRoleSubmit}>
+                            <div className="form-group">
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>New Role:</label>
+                                <select
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={(e) => {
+                                        const selectedRole = e.target.value;
+                                        setFormData((prevFormData) => ({
+                                            ...prevFormData,
+                                            role: selectedRole,
+                                            days: selectedRole === "advisor" ? [] : prevFormData.days,
+                                            crew_no: selectedRole === "coordinator" ? 1 : prevFormData.crew_no,
+                                        }));
+                                    }}
+                                    required
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="advisor">Advisor</option>
+                                    <option value="guide">Guide</option>
+                                    <option value="coordinator">Coordinator</option>
+                                </select>
+                            </div>
+
+                            {formData.role === "advisor" && (
                                 <div className="form-group">
-                                    <label>Days:</label>
-                                    <input
-                                        type="text"
-                                        name="days"
+                                    <label>Select Available Days:</label>
+                                    <MultiSelect
                                         value={formData.days}
-                                        onChange={handleChange}
+                                        options={daysOptions}
+                                        onChange={(e) => setFormData({ ...formData, days: e.value })}
+                                        placeholder="Select Days"
+                                        display="chip"
                                         required
                                     />
                                 </div>
                             )}
-                            <button type="submit">Register</button>
+                            <button type="submit">Change Status</button>
+                        </form>
+                    </div>
+                )}
+
+
+                {action === "updateCrewNo" && (
+                    <div className="form-container">
+                        <h2>Update Crew No</h2>
+                        <form onSubmit={handleUpdateCrewNoSubmit}>
+                            <div className="form-group">
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Crew No:</label>
+                                <input
+                                    type="text"
+                                    name="crew_no"
+                                    value={formData.crew_no}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <button type="submit">Update Crew No</button>
                         </form>
                     </div>
                 )}

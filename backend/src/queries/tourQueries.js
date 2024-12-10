@@ -284,6 +284,7 @@ exports.getAllTours = async () => {
         s.school_name,
         s.city,
         t.date,
+        s.credit_score,
         t.day,
         t.tour_size,
         t.teacher_name,

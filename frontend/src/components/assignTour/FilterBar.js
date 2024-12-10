@@ -72,7 +72,8 @@ export default function FilterBar({ onFilterChange }) {
           className="filter-input"
         />
       </div>
-      
+      {(localStorage.getItem("userType") === '3' || localStorage.getItem("userType") === '4' || localStorage.getItem("userType") === '2') && (
+          
       <div className="filter-row">
         <InputText
           value={filters.school}
@@ -97,6 +98,7 @@ export default function FilterBar({ onFilterChange }) {
           className="filter-input"
         />
       </div>
+      )}
       {/* School Filter */}
 
       {/* Clear Filters Button */}

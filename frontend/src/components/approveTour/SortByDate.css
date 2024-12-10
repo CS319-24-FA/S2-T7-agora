@@ -1,0 +1,19 @@
+/* src/components/SortByDate.css */
+
+/* Styles specific to the SortByDate component */
+
+.sort-by-date {
+    display: flex;
+    align-items: center;
+}
+
+.sort-label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.p-dropdown {
+    /* Optional: Customize the dropdown appearance */
+    min-width: 200px;
+}
